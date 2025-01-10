@@ -1,0 +1,200 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="backHome()">
+        <ion-icon name="home"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ infoIniciais?.franquia.nome_franquia }} - {{ infoIniciais?.rota.nome }}
+      {{ levantamento ? " Levantamento" : "" }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="trocarRota()">
+        <ion-icon name="shuffle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <span style="font-size: 10px;">{{ infoIniciais?.responsavel.nome }}</span>
+    <span *ngFor="let item of infoIniciais?.equipe" style="font-size: 8px;"> || aux: {{ item.nome }}</span>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment>
+      <ion-segment-button value="listaAguardando" (click)="scrollTo($event)" *ngIf="tamAguardando > 0" checked>
+        AGUARDANDO
+      </ion-segment-button>
+      <ion-segment-button value="listaExecutada" (click)="scrollTo($event)" *ngIf="tamListaExec > 0"
+        checked="!aguardando">
+        EXECUTADAS
+      </ion-segment-button>
+      <ion-segment-button value="listaNaoExec" (click)="scrollTo($event)" *ngIf="tamListaNaoExec > 0"
+        checked="!aguardando && !listaExec">
+        Ñ. EXEC.
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollEvents]="true">
+  <ion-row *ngIf="tamAguardando <= 0">
+    <ion-col>
+      <ion-text text-center color="dark" style="margin-top: 20%;">
+        <h5 text-center class="mt-4">
+          <ion-icon name="checkmark"></ion-icon><br />
+          Sem ordens de serviço baixadas ou todas as ordens já foram executadas.
+        </h5>
+      </ion-text>
+    </ion-col>
+  </ion-row>
+
+  <!-- AGUARDANDO-->
+
+  <ion-list *ngIf="tamAguardando > 0" id="listaAguardando">
+    <ion-list-header>
+      <ion-text color="medium">
+        <h4>Aguardando</h4>
+      </ion-text>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let item of aguardando">
+      <ion-item (click)="acessarOs(item?.id)" tappable>
+        <ion-icon name="time" slot="start" size="large" id="icon{{ item?.id }}"></ion-icon>
+
+        <ion-label text-wrap>
+          <h3>
+            <strong>{{ item?.nomeCliente }}</strong>
+          </h3>
+          <h5>
+            <span style="font-size: 8px;">STATUS: {{ item?.status }}</span>
+          </h5>
+          <h5 padding-bottom>{{ item?.endereco }}</h5>
+          <p>
+            <ion-col>
+              <ion-text color="primary">
+                <ion-icon name="time"></ion-icon>
+              </ion-text>&nbsp;{{
+              item?.horaInicio != 'null' ? item?.horaInicio != null ? item?.horaInicio : item?.horario : item?.horario
+              }}&nbsp;&nbsp;&nbsp; - {{ item?.id }}
+            </ion-col>
+            <ion-text color="danger">
+              <strong>
+                <ion-col *ngIf="item?.fog === 1">Fog</ion-col>
+                <ion-col *ngIf="item?.armadilha === 1">Armadilha</ion-col>
+                <ion-col *ngIf="item?.escada === 1">Escada</ion-col>
+                <ion-col *ngIf="item?.modulo === 1">Módulo</ion-col>
+              </strong>
+            </ion-text>
+          </p>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="success" (click)="ligar(item?.telefoneContato)">
+          <ion-icon name="call"></ion-icon>&nbsp;Ligar
+        </ion-item-option>
+        <ion-item-option color="primary" (click)="abrirMapa(item)">
+          <ion-icon name="pin"></ion-icon>&nbsp;Localização
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- EXECUTADAS-->
+  <ion-list id="listaExecutada" *ngIf="tamListaExec > 0">
+    <ion-list-header>
+      <ion-text color="success">
+        <h4>Executadas</h4>
+      </ion-text>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let item of listaExec">
+      <ion-item (click)="acessarOsLevExec(item?.id)">
+        <!-- <ion-spinner slot="start" *ngIf="item?.status !== 3"></ion-spinner> -->
+        <ion-icon name="hourglass" *ngIf="item?.status.toString() !== '4'" slot="start" size="large"></ion-icon>
+        <ion-icon name="checkmark-circle" *ngIf="item?.status.toString() === '4'" color="success" slot="start"
+          size="large"></ion-icon>
+
+        <ion-label text-wrap>
+          <h3>
+            <strong>{{ item?.nomeCliente }}</strong>
+          </h3>
+          <h5>
+            <span style="font-size: 8px;">STATUS: {{ item?.status }}</span>
+          </h5>
+          <p>
+            <ion-row>
+              <ion-col size="4">
+                Início:&nbsp;{{ item?.horaInicio | date: "HH:mm" }}
+              </ion-col>
+              <ion-col size="5">
+                Término:&nbsp;{{ item?.horaFim | date: "HH:mm" }}
+              </ion-col>
+              <ion-col size="3">
+                {{ item?.id }}
+              </ion-col>
+            </ion-row>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="success" (click)="relatorio(item?.id)">
+          <ion-icon name="document"></ion-icon>&nbsp;Relatório
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!--  NAO EXEC -->
+  <ion-list lines="full" id="listaNaoExec" *ngIf="tamListaNaoExec > 0">
+    <ion-list-header>
+      <ion-text color="danger">
+        <h4>Não executadas</h4>
+      </ion-text>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let item of listaNaoExec">
+      <ion-item (click)="acessarOsLevExec(item?.id)">
+        <!--<ion-spinner slot="start" *ngIf="item?.status !== 3"></ion-spinner>-->
+        <ion-icon name="hourglass" *ngIf="item?.status.toString() !== '3'" slot="start" size="large"></ion-icon>
+        <ion-icon name="checkmark-circle" *ngIf="item?.status.toString() === '3'" color="success" slot="start"
+          size="large"></ion-icon>
+
+        <ion-label text-wrap>
+          <h3>
+            <strong>{{ item?.nomeCliente }}</strong>
+          </h3>
+          <h5>
+            <span style="font-size: 8px;">STATUS: {{ item?.status }}</span>
+          </h5>
+          <p>
+            <ion-row>
+              <ion-col size="9">
+                Informado às:&nbsp;{{ item?.horaInfo | date: "HH:mm" }}
+              </ion-col>
+              <ion-col size="3">
+                {{ item?.id }}
+              </ion-col>
+            </ion-row>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="success" (click)="relatorioNaoExec(item?.id)">
+          <ion-icon name="document"></ion-icon>&nbsp;Relatório
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="ios-wifi"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button class="fab" (click)="atualizarOs()" color="danger">
+        <ion-icon name="cloud-download"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button class="fab" (click)="enviarOs()" color="success">
+        <ion-icon name="cloud-upload"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="primary">
+      <ion-button (click)="voltar()"> Voltar </ion-button>
+    </ion-buttons>
+    <ion-title>Inserir novo dispositivo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding *ngIf="formNovoDispositivo">
+  <form [formGroup]="formNovoDispositivo">
+    <ion-list>
+      <ion-item lines="full">
+        <ion-label position="floating">Tipo do Dispositivo</ion-label>
+        <ionic-selectable [items]="tiposDispositivos" itemValueField="id" itemTextField="nome"
+          formControlName="dispositivo" closeButtonText="Cancelar">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item lines="full" *ngIf="formNovoDispositivo.get('dispositivo').valid" padding-top>
+        <ion-label position="floating">Quantidade</ion-label>
+        <ion-input type="number" formControlName="quantidade">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>
+
+<ion-footer *ngIf="formNovoDispositivo && formNovoDispositivo.valid">
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="success" (click)="salvarDispositivo()">
+          Salvar
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

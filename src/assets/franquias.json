@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "id_sec": 1,
+    "nome": "Manaus",
+    "api": "https://mao-api.gspro12.com.br/",
+    "assinatura": false
+  },
+  {
+    "id": 1,
+    "id_sec": 2,
+    "nome": "Itajai",
+    "api": "https://itj-api.gspro12.com.br/",
+    "assinatura": true
+  },
+  {
+    "id": 1,
+    "id_sec": 3,
+    "nome": "Belem",
+    "api": "https://bel-api.gspro12.com.br/",
+    "assinatura": false
+  },
+  {
+    "id": 1,
+    "id_sec": 4,
+    "nome": "Campinas",
+    "api": "https://vcp-api.gspro12.com.br/",
+    "assinatura": true
+  },
+  {
+    "id": 1,
+    "id_sec": 5,
+    "nome": "Rio de Janeiro",
+    "api": "https://rio-api.gspro12.com.br/",
+    "assinatura": true
+  },
+  {
+    "id": 1,
+    "id_sec": 11,
+    "nome": "Manaus DEVE",
+    "api": "http://167.99.185.182:3000/",
+    "assinatura": false
+  },
+  {
+    "id": 1,
+    "id_sec": 111,
+    "nome": "Manaus HOMO",
+    "api": "https://mao-api-hom.gspro12.com.br/",
+    "assinatura": false
+  },
+  {
+    "id": 1,
+    "id_sec": 1111,
+    "nome": "Manaus LOCAL DEVE",
+    "api": "http://192.168.0.12:3333/",
+    "assinatura": false
+  }
+]

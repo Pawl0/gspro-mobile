@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Franquia e rota</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+
+  <ion-row>
+    <ion-col padding>
+      <form [formGroup]="formRota">
+        <ion-item>
+          <ion-label>Rota</ion-label>
+          <ion-select interface="action-sheet" [interfaceOptions]="configRota" #r (ionChange)="setarRota(r.value)"
+            formControlName="rota">
+            <ion-select-option *ngFor="let item of franquiaRotas" [value]="item">{{item?.nome}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </form>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col *ngIf="franquiaRota" padding>
+      <ion-button expand="block" (click)="voltarFunc()">VOLTAR</ion-button>
+    </ion-col>
+    <ion-col *ngIf="formRota.valid" padding>
+      <ion-button expand="block" (click)="avancarFunc()">AVANÇAR</ion-button>
+    </ion-col>
+  </ion-row>
+
+
+  <!-- <app-formdebug [form]="formFranquia"></app-formdebug> -->
+</ion-content>

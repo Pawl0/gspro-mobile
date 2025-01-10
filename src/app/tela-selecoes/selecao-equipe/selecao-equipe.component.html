@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Equipe</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <ion-col padding>
+      <form [formGroup]="formResp">
+        <ion-item>
+          <ion-label>Técnico responsável</ion-label>
+          <ionic-selectable [items]="tecnicos" itemValueField="id" itemTextField="tec" [canSearch]="true"
+            formControlName="responsavel" closeButtonText="Cancelar" searchFailText="'Nenhum nome encontrado'"
+            searchPlaceholder="Buscar nome" (onChange)="filterByResponsavel($event)"></ionic-selectable>
+        </ion-item>
+      </form>
+    </ion-col>
+  </ion-row>
+
+  <ion-row *ngIf="formResp.valid">
+    <ion-col padding>
+      <form [formGroup]="formEquipe">
+        <ion-item>
+          <ion-label>Auxiliares</ion-label>
+          <ionic-selectable [items]="tecnicosMinus" itemValueField="id" itemTextField="tec" [canSearch]="true"
+            [isMultiple]="true" formControlName="equipe" closeButtonText="Cancelar"
+            searchFailText="'Nenhum nome encontrado'" searchPlaceholder="Buscar nome">
+          </ionic-selectable>
+        </ion-item>
+      </form>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col *ngIf="franquiaRota" padding>
+      <ion-button expand="block" (click)="voltarFunc()">VOLTAR</ion-button>
+    </ion-col>
+    <ion-col *ngIf="formResp.valid" padding>
+      <ion-button expand="block" (click)="proximaTela()">AVANÇAR</ion-button>
+    </ion-col>
+  </ion-row>
+  <!-- <app-formdebug [form]="formResp"></app-formdebug> -->
+</ion-content>

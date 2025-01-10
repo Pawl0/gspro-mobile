@@ -1,0 +1,120 @@
+<ion-content padding-horizontal>
+  <!-- <ion-card *ngIf="access == 1 || 1" id="rota" (click)="acessarSelecoes()"> -->
+  <ion-card *ngIf="access == 1" id="rota" (click)="acessarSelecoes()">
+    <div class="img"></div>
+    <ion-card-header>
+      <ion-card-title>Serviços ({{franNome}})</ion-card-title>
+    </ion-card-header>
+  </ion-card>
+
+  <!--<ion-card id="quadro">
+    <div class="img"></div>
+    <ion-card-header>
+      <ion-card-title>Quadro de avisos</ion-card-title>
+    </ion-card-header>
+  </ion-card>-->
+
+  <!-- <ion-card *ngIf="access == 1 || 1" class="update-card"> -->
+  <ion-card *ngIf="access == 1" class="update-card">
+    <ion-card-header>
+      <ion-card-title>Sincronização</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Clique para sincronizar dados (tecnicos, produtos, areas, pragas,
+        frases).
+      </p>
+      <br />
+      <ion-button (click)="atualizarDadosPrompt()" block expand="full">
+        Sincronizar
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="access == 0" class="update-card">
+    <ion-card-header>
+      <ion-card-title>Franquia</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Selecione sua franquia
+      </p>
+      <br />
+      <ion-item>
+        <ion-label position="floating">Franquia</ion-label>
+        <ionic-selectable [items]="franquias" itemValueField="id" itemTextField="nome"
+          closeButtonText="Cancelar"></ionic-selectable>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="access == 0 && showValidacao == 1" class="update-card">
+    <ion-card-header>
+      <ion-card-title>Validacao</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Aparelho Nao validado, clique para inserir o PIN
+      </p>
+      <br />
+      <ion-button (click)="validarUUID()" block expand="full">
+        Validar
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="update-card" *ngIf="haveUpdate">
+    <!--<div class="manutencao">
+    
+    </div>-->
+    <ion-card-header>
+      <ion-progress-bar type="indeterminate" *ngIf="!btnAllowInstall"></ion-progress-bar>
+      <ion-card-title *ngIf="!btnAllowInstall">Baixando atualização, versão: {{ app?.version }}</ion-card-title>
+      <ion-card-title *ngIf="btnAllowInstall">Atualização disponível, versão: {{ app?.version }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p *ngIf="!btnAllowInstall">
+        Deixe a tela do celular ligada e espere a atualização ser baixada para
+        utilizar o aplicativo.
+      </p>
+      <p>
+        Caso prefira instalar a atualização manualmente, clique
+        <a (click)="atualizarManualmente()">aqui</a>
+      </p>
+      <br />
+      <b>{{ message }}</b>
+      <b *ngIf="btnAllowInstall">Entre em contato com o suporte para confirmar a atualização.</b>
+      <ion-button (click)="installUpdate()" block expand="full" *ngIf="btnAllowInstall">
+        Atualizar aplicativo
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- <ion-card class="update-card">
+    <ion-card-header>
+      <ion-card-title>Informacao do aparelho</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        Clique para validar seu aparelho
+      </p>
+      <br />
+      <ion-button (click)="validarDevice()" block expand="full">
+        VALIDAR
+      </ion-button>
+    </ion-card-content>
+  </ion-card> -->
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-text text-center color="dark">
+          <h5 text-center (click)="debug()">v{{ versao }}</h5>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

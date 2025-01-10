@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Qtd. de produtos
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding-horizontal>
+
+  <ion-list>
+    <form [formGroup]="formProdutos">
+      <div *ngFor="let produtoItem of produtos; let produto of control; let i = index" formArrayName="produto">
+        <ion-item [formGroupName]="i">
+          <ion-label position="floating">{{produtoItem?.nome}}</ion-label>
+          <ion-input formControlName="quantidade" type="number"></ion-input>
+        </ion-item>
+      </div>
+    </form>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer *ngIf="formProdutos.valid" >
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="relatorio()">Relatório</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

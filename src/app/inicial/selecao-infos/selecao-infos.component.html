@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Informações iniciais</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="fechar()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-list>
+
+
+
+    <ion-item margin-top>
+      <ion-label position="floating">Rota</ion-label>
+      <ionic-selectable [items]="franquiaRotas" itemValueField="id" itemTextField="nome" closeButtonText="Cancelar" #r
+        (onChange)="setarRota(r.value)" [hasVirtualScroll]="true"></ionic-selectable>
+    </ion-item>
+
+
+    <ion-item margin-top>
+      <ion-label position="floating">Técnico responsável</ion-label>
+      <ionic-selectable [items]="tecnicos" itemValueField="id" itemTextField="nome" [canSearch]="true"
+        closeButtonText="Cancelar" searchFailText="'Nenhum nome encontrado'" searchPlaceholder="Buscar nome"
+        (onChange)="filterByResponsavel($event)" [hasVirtualScroll]="true">
+      </ionic-selectable>
+    </ion-item>
+
+    <ion-item margin-top>
+      <ion-label position="floating">Auxiliares</ion-label>
+      <ionic-selectable [items]="tecnicosMinus" itemValueField="id" itemTextField="nome" [canSearch]="true"
+        [isMultiple]="true" closeButtonText="Cancelar" searchFailText="'Nenhum nome encontrado'"
+        searchPlaceholder="Buscar nome" [hasVirtualScroll]="true" (onChange)="selectEquipe($event)">
+      </ionic-selectable>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="avancarFunc()" [disabled]="liberarAvancar">AVANÇAR</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

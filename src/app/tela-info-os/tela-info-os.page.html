@@ -1,0 +1,155 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>OS&nbsp;{{ ordemDetalhes?.id }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <div (click)="abrirMapa()" #map class="map"></div>
+
+    <ion-item>
+      <ion-label text-wrap>
+        <h3>{{ ordemDetalhes?.nomeCliente }}</h3>
+        <p>{{ ordemDetalhes?.endereco }}</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-row>
+          <ion-col size="5">
+            <p>
+              <ion-icon name="time"></ion-icon>
+              <ng-container
+                *ngIf="
+                  ordemDetalhes?.horario === 'Hora Marcada';
+                  else horaMarcada
+                "
+              >
+                {{ ordemDetalhes?.horaInicio }}
+              </ng-container>
+              <ng-template #horaMarcada>
+                {{ ordemDetalhes?.horario }}
+              </ng-template>
+            </p>
+          </ion-col>
+          <ion-col size="5">
+            <p>
+              <ion-icon name="stopwatch"></ion-icon>
+              {{ ordemDetalhes?.duracao }}h
+            </p>
+          </ion-col>
+          <ion-col size="2">
+            <p>
+              <ion-icon name="people"></ion-icon> {{ ordemDetalhes?.qtdTec }}
+            </p>
+          </ion-col>
+        </ion-row>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-col>
+        <small>
+          <p>{{ ordemDetalhes?.tipoContrato }}</p>
+        </small>
+      </ion-col>
+      <ion-col>
+        <small>
+          <p>
+            <ng-container *ngIf="ordemDetalhes?.servico.trim() == 'Inicial'; else naoInicial">
+              <ng-container *ngIf="ordemDetalhes?.renovacao; else statusNovo">
+                {{ ordemDetalhes?.servico }} - Renovação
+              </ng-container>
+              <ng-template #statusNovo>
+                {{ ordemDetalhes?.servico }} - Novo
+              </ng-template>
+            </ng-container>
+            <ng-template #naoInicial>
+              {{ ordemDetalhes?.servico }}
+            </ng-template>
+          </p>
+        </small>
+      </ion-col>
+      <ion-col size="2">
+        <small>
+          <p>Nº&nbsp; {{ ordemDetalhes?.numServico }}</p>
+        </small>
+      </ion-col>
+    </ion-item>
+    <ion-item color="primary" detail (click)="trocarRota()">
+      <ion-label>Técnicos selecionados</ion-label>
+    </ion-item>
+    <br />
+    <small
+      ><div no-padding text-center><b>Responsável</b></div>
+      <ion-row padding-bottom>
+        <ion-col>
+          <div text-center>{{ infoIniciais?.responsavel.nome }}</div>
+        </ion-col>
+      </ion-row></small
+    >
+
+    <small
+      ><div text-center *ngIf="equipeLength > 0"><b>Auxiliares</b></div>
+
+      <ion-row *ngFor="let auxiliar of infoIniciais?.equipe">
+        <ion-col>
+          <div text-center>{{ auxiliar.nome }}</div>
+        </ion-col>
+      </ion-row>
+    </small>
+    <br />
+    <ion-item
+      color="primary"
+      detail
+      (click)="listaComplementos(ordemDetalhes?.id)"
+    >
+      <ion-label>Reclamações, Observações e Solicitações</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="danger"
+          (click)="naoExec()"
+        >
+          NÃO EXECUTADA
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="acessarListaAreas()"
+        >
+          <ng-container
+            *ngIf="
+              horaInicio ||
+                ordemDetalhes.status == 1 ||
+                ordemDetalhes.status == 2;
+              else iniciar
+            "
+          >
+            Continuar OS
+          </ng-container>
+          <ng-template #iniciar>
+            Iniciar OS
+          </ng-template>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

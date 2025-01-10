@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Assinatura do cliente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list *ngIf="!dadosCliente">
+    <form [formGroup]="formCliente">
+      <ion-item>
+        <ion-label position="stacked">Nome*</ion-label>
+        <ion-input type="text" formControlName="nome"></ion-input>
+      </ion-item>
+
+      <ion-item margin-top>
+        <ion-label position="stacked">RG (Somente números)</ion-label>
+        <ion-input type="number" formControlName="rg"></ion-input>
+      </ion-item>
+
+      <ion-item margin-top>
+        <ion-label position="stacked">Observação geral</ion-label>
+        <ion-textarea formControlName="obsGeral"></ion-textarea>
+      </ion-item>
+
+      <ion-item margin-top>
+        <ion-label position="stacked">Observação para o próximo serviço</ion-label>
+        <ion-textarea formControlName="obsProximo"></ion-textarea>
+      </ion-item>
+    </form>
+
+    <ion-row padding-top>
+      <ion-col>
+        <!-- [disabled]="formCliente.invalid" -->
+        <ion-button expand="block" *ngIf="mostrarbtnassinardepois" (click)="assinarDepois()">Assinar depois</ion-button>
+        <ion-button *ngIf="!levantamento" expand="block" [disabled]="formCliente.invalid"
+          (click)="assinar()">Assinar</ion-button>
+
+        <ion-button *ngIf="levantamento" expand="block" [disabled]="formCliente.invalid"
+          (click)="finalizarLev()">Finalizar levantamento
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-list>
+
+  <ion-list *ngIf="dadosCliente">
+    <ion-item lines="none">
+      <!-- <signature-pad
+        [options]="signaturePadOptions"
+        (onEndEvent)="endSignature()"
+      ></signature-pad> -->
+    </ion-item>
+
+    <ng-container *ngIf="exibirBtnsConst" lines="none">
+      <ion-row>
+        <ion-col>
+          <ion-button expand="block" color="danger" (click)="limparAssinatura()">Limpar</ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button expand="block" (click)="mostrarDados()">Dados</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button *ngIf="mostrarbtnassinardepois" expand="block" color="success" (click)="continuarOs()">Continuar
+            Os</ion-button>
+          <ion-button *ngIf="!mostrarbtnassinardepois" expand="block" color="success" (click)="finalizarOs()">Finalizar
+            OS</ion-button>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+  </ion-list>
+</ion-content>

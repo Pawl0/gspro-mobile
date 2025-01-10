@@ -1,0 +1,52 @@
+<!--<ion-list>
+  <ion-list-header>
+    <ion-text color="medium">
+      <h4>Aguardando</h4>
+    </ion-text>
+  </ion-list-header>
+
+  <ion-item-sliding *ngFor="let item of aguardando">
+
+    <ion-item (click)="acessarOs(item?.id, item?.nomeCliente)" tappable>
+
+      <ion-icon name="time" slot="start" size="large" id="icon{{item?.id}}"></ion-icon>
+
+      <ion-label text-wrap>
+        <h3><strong>{{item?.nomeCliente}}</strong></h3>
+        <h5 padding-bottom>{{item?.endereco}}</h5>
+        <p>
+          <ion-col>
+            <ion-text color="primary">
+              <ion-icon name="time"></ion-icon>
+            </ion-text>&nbsp;{{item?.horario === 'Hora Marcada' ? item?.horaInicio : item?.horario }}&nbsp;&nbsp;&nbsp; - {{ item?.id }}
+          </ion-col>
+          <ion-text color="danger">
+            <strong>
+              <ion-col *ngIf="item?.fog === 1">Fog</ion-col>
+              <ion-col *ngIf="item?.armadilha === 1">Armadilha</ion-col>
+              <ion-col *ngIf="item?.escada === 1">Escada</ion-col>
+              <ion-col *ngIf="item?.modulo === 1">Módulo</ion-col>
+            </strong>
+          </ion-text>
+        </p>
+      </ion-label>
+
+    </ion-item>
+    <ion-item-options side="end">
+      <ion-item-option color="light" (click)="ligar(item?.telefoneContato)">
+        <ion-icon name="call"></ion-icon>&nbsp;Ligar
+      </ion-item-option>
+      <ion-item-option color="medium" (click)="abrirMapa(item)">
+        <ion-icon name="pin"></ion-icon>&nbsp;Localização
+      </ion-item-option>
+    </ion-item-options>
+
+  </ion-item-sliding>
+</ion-list>
+<ion-content>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button>
+    <ion-icon name="arrow-dropleft"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+</ion-content> -->

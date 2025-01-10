@@ -1,0 +1,176 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button (click)="abrirModal()">
+                <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>{{ areaId?.nome }}</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+        <ion-segment>
+            <ion-segment-button value="pragas" (click)="scrollTo($event)" checked>
+                PRAGAS
+            </ion-segment-button>
+            <ion-segment-button value="met" (click)="scrollTo($event)">
+                METOD.
+            </ion-segment-button>
+            <ion-segment-button value="reco" (click)="scrollTo($event)">
+                RECOM.
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding-top>
+    <div id="conteudoDetalhes">
+        <ion-list id="pragas">
+            <ion-item-group>
+                <ion-item-divider item-center>
+                    <div item-center>Pragas</div>
+                </ion-item-divider>
+
+                <ion-item color="primary" detail (click)="adicionarConteudoPraga()">
+                    <strong><ion-icon name="add"></ion-icon> Adicionar praga</strong>
+                </ion-item>
+
+                <ion-item-sliding *ngFor="let item of areaPraga">
+                    <ion-item (click)="editarConteudoPraga()">
+                        <ion-label>
+                            <small>
+                <p>{{ item?.nome }}</p>
+                <ion-text color="medium">
+                  <p>
+                    Infestação:
+                    <ng-container
+                      *ngFor="let valor of infestacaoValores | keyvalue"
+                    >
+                      <ng-container *ngIf="item?.nivel == valor?.key">{{
+                        valor?.value
+                      }}</ng-container>
+                    </ng-container>
+                  </p>
+                </ion-text>
+              </small>
+                        </ion-label>
+                    </ion-item>
+                    <!-- <ion-item-options side="start">
+            <ion-item-option color="danger" (click)="removerConteudo(item)">
+              <ion-icon name="alert"></ion-icon>&nbsp;Apagar
+            </ion-item-option>
+          </ion-item-options> -->
+                </ion-item-sliding>
+            </ion-item-group>
+        </ion-list>
+
+        <ion-list id="met">
+            <ion-item-group>
+                <ion-item-divider> Metodologias </ion-item-divider>
+
+                <ion-item detail (click)="acessarIscasConsumidas(modulo)" tappable *ngFor="let modulo of modulosGravados; let i = index">
+                    {{ modulo?.nome !== undefined ? modulo?.nome : modulo?.modulo }} - Iscas consumidas: {{ modulo?.consumidas }}
+                </ion-item>
+
+                <ion-item color="primary" detail (click)="adicionarConteudoMet()" tappable>
+                    <strong><ion-icon name="add"></ion-icon> Adicionar metodologia</strong
+          >
+        </ion-item>
+
+        <ion-item-sliding *ngFor="let item of areaMetodologia; let i = index">
+          <ion-item detail (click)="editarConteudo(i)" tappable>
+            <ion-label>
+              <small>
+                <ng-container *ngIf="!item?.qtdMod; else modulo">
+                  <p>{{ item?.metodologia }}</p>
+                  <ion-text color="medium">
+                    <p>{{ item?.metodo }} / {{ item?.produto }}</p>
+                  </ion-text>
+                </ng-container>
+
+                <ng-template #modulo>
+                  <p>{{ item?.metodologia }}</p>
+                  <ion-text color="medium">
+                    <p>
+                      {{ item?.metodo }} / {{ item?.produto }}
+                      <span *ngIf="item?.qtdMod">/ {{ item?.qtdMod }}</span>
+                      <span *ngIf="item?.isca">/ {{ item?.isca.nome }}</span>
+                    </p>
+                  </ion-text>
+                </ng-template>
+              </small>
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="start">
+            <ion-item-option
+              color="danger"
+              (click)="apagarConteudoMet(item?.id)"
+            >
+              <ion-icon name="close-circle"></ion-icon>&nbsp;Apagar
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-item-group>
+    </ion-list>
+
+    <ion-list id="reco">
+      <ion-item-group>
+        <ion-item-divider> Recomendações </ion-item-divider>
+
+        <ion-item color="primary" detail (click)="adicionarConteudo()">
+          <strong
+            ><ion-icon name="add"></ion-icon> Adicionar recomendação</strong
+          >
+        </ion-item>
+
+        <ion-item-sliding *ngFor="let item of areaReco">
+          <ion-item detail>
+            <!-- (click)="editarConteudo(i)" -->
+            <ion-label>
+              <small>
+                <p text-wrap>{{ item?.textoFrase }}</p>
+                <ion-text color="medium">
+                  <p>{{ item?.complemento }}</p>
+                </ion-text>
+              </small>
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="start">
+            <ion-item-option
+              color="danger"
+              (click)="removerConteudo(item?.idReco)"
+            >
+              <ion-icon name="close-circle"></ion-icon>&nbsp;Apagar
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-item-group>
+    </ion-list>
+
+    <ion-list id="reco">
+      <ion-item-group>
+        <ion-item-divider> Dispositivos </ion-item-divider>
+
+        <ion-item
+          color="primary"
+          detail
+          (click)="gerenciarDispositivos()"
+        >
+          <strong
+            ><ion-icon name="settings"></ion-icon> Gerenciar Dispositivo</strong
+          >
+        </ion-item>
+
+      </ion-item-group>
+    </ion-list>
+  </div>
+</ion-content>
+
+<ion-footer *ngIf="salvarBtn">
+  <ion-row>
+    <ion-col>
+      <ion-button expand="block" color="success" (click)="finalizar()"
+        >Finalizar área</ion-button
+      >
+    </ion-col>
+  </ion-row>
+</ion-footer>

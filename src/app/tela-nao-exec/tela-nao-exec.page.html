@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Justificativa</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="voltar()">
+        <ion-icon icon="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="formMotivo">
+    <ion-item>
+      <ion-label position="floating">Justificativa</ion-label>
+      <ionic-selectable [items]="listaFrasesNaoExec" itemValueField="id" itemTextField="frase" formControlName="frase"
+        closeButtonText="Cancelar" [hasVirtualScroll]="true"></ionic-selectable>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-text color="medium">
+        <br />
+        <span>{{ fraseSplit[0] }}</span>
+        <p>
+          <ion-input *ngIf="hasComplete == 1" type="text" formControlName="complemento"
+            placeholder="___________________________"></ion-input>
+          <span *ngIf="hasComplete >= 1"> {{ fraseSplit[1] }}</span>
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ng-container *ngIf="inputImg; else pwa">
+      <ion-row padding-top *ngIf="formMotivo.get('frase').valid">
+        <ion-col>
+          <ion-button expand="block" (click)="foto()">
+            Câmera
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+
+    <ng-template #pwa>
+      <ion-row *ngIf="formMotivo.get('frase').valid">
+        <ion-col>
+          <ion-button expand="block" (click)="imgPwa.click()">
+            Imagem
+          </ion-button>
+          <input type="file" hidden #imgPwa accept="image/*" capture="environment" (change)="foto($event)" />
+        </ion-col>
+      </ion-row>
+    </ng-template>
+
+    <ion-row>
+      <ion-img *ngIf="imgDisplay" src="{{ imgDisplay }}"></ion-img>
+    </ion-row>
+  </form>
+</ion-content>
+
+<ion-footer *ngIf="formMotivo.valid">
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button color="success" expand="block" (click)="gravarDados()">Finalizar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

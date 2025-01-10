@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Debug</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-button expand="block" (click)="voltar()">Sair</ion-button>
+ 
+  <ion-button (click)="validarDevice()" block expand="full">
+    VALIDAR
+  </ion-button>
+   
+  <ion-input
+    type="text"
+    [(ngModel)]="senha"
+    value=""
+    placeholder="Senha"
+  ></ion-input>
+  <ion-button expand="block" color="danger" (click)="clearHoraInicio()"
+    >Limpar hora inicio</ion-button
+  >
+  <ion-button expand="block" color="danger" (click)="deleteAllOs()"
+    >Apagar todas as OS e seus dados</ion-button
+  >
+  <br /><br />
+  <ion-input
+    type="number"
+    [(ngModel)]="os"
+    value=""
+    placeholder="OS"
+  ></ion-input>
+  <ion-button expand="block" color="danger" (click)="deleteAllByOs()"
+    >Deletar tudo da OS</ion-button
+  >
+
+  <h3>Os</h3>
+  <ion-item *ngFor="let os of listaOs">
+    <ion-label text-wrap>
+      {{ os.id }}
+    </ion-label>
+  </ion-item>
+
+  <h3>OBS</h3>
+  <ion-item *ngFor="let ob of obs">
+    <ion-label text-wrap>
+      {{ ob | json }}
+    </ion-label>
+  </ion-item>
+
+  <h3>Complementos</h3>
+  <ion-item *ngFor="let complemento of complementos">
+    <ion-label>
+      {{ complemento | json }}
+    </ion-label>
+    <ion-button color="danger" (click)="deleteComp(complemento.id)"
+      >Deletar ({{ complemento.id }})</ion-button
+    >
+  </ion-item>
+
+  <h3>Recomendacaes</h3>
+  <ion-item *ngFor="let recomendacao of recomendacaes">
+    <ion-label>
+      {{ recomendacao | json }}
+    </ion-label>
+    <ion-button color="danger" (click)="deleteReco(recomendacao.id)"
+      >Deletar ({{ recomendacao.id }})</ion-button
+    >
+  </ion-item>
+
+  <h3>Produto Metodo</h3>
+  <ion-item *ngFor="let pm of produtoMetodo">
+    <ion-label>
+      {{ pm | json }}
+    </ion-label>
+  </ion-item>
+
+  <h3>ProdutoOs</h3>
+  <ion-item *ngFor="let produto of produtoOs">
+    <ion-label text-wrap>
+      {{ produto | json }}
+    </ion-label>
+    <ion-button color="danger" (click)="deleteProdutoOs(produto.id)"
+      >Deletar ({{ produto.id }})</ion-button
+    >
+  </ion-item>
+
+  <h3>Praga Os</h3>
+  <ion-item *ngFor="let p of pragasOs">
+    <ion-label text-wrap>
+      {{ p | json }}
+    </ion-label>
+    <ion-button color="danger" (click)="deletePragaOs(p.id)"
+      >Deletar ({{ p.id }})</ion-button
+    >
+  </ion-item>
+
+  <h3>Areas Os</h3>
+  <ion-item *ngFor="let a of areasOs">
+    <ion-label text-wrap>
+      {{ a | json }}
+    </ion-label>
+    <ion-button color="danger" (click)="deleteAreaOs(a.id)"
+      >Deletar ({{ a.id }})</ion-button
+    >
+  </ion-item>
+
+  <h3>Json</h3>
+  <ion-item *ngFor="let j of json">
+    <ion-label text-wrap> <b>OS: </b>{{ j.os }} </ion-label><br />
+    <ion-button color="danger" (click)="deleteJson(j.os)"
+      >Deletar ({{ j.os }})</ion-button
+    >
+    <ion-button (click)="sendJson(j)">Enviar Json({{ j.os }})</ion-button>
+  </ion-item>
+
+  <h3>Modulos</h3>
+  <ion-item *ngFor="let modulo of modulos">
+    <ion-label>
+      {{ modulo.nome }}
+    </ion-label>
+  </ion-item>
+</ion-content>

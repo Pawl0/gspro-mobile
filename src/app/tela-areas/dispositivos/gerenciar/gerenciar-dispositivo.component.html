@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="primary">
+      <ion-button (click)="voltar()"> Voltar </ion-button>
+    </ion-buttons>
+    <ion-title>Dispositivo {{ dispositivo.sequencia }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-content padding *ngIf="dispositivo?.deConsumo == 1; else gerenciarPragas">
+    <form [formGroup]="formConsumo" *ngIf="formConsumo">
+      <ion-row>
+        <ion-col>
+          <ion-list>
+            <ion-item lines="full">
+              <ion-checkbox slot="start" [formControlName]="'consumido'">
+              </ion-checkbox>
+              <ion-label>Consumido</ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-button color="success" expand="block" [disabled]="!formConsumo.valid || disableActions"
+        (click)="salvarDispositivoConsumo()">
+        Salvar
+      </ion-button>
+    </form>
+  </ion-content>
+
+  <ng-template #gerenciarPragas>
+    <ion-content padding>
+      <form [formGroup]="formPraga" *ngIf="formPraga">
+        <ion-row>
+          <ion-col>
+            <ion-list>
+              <ion-item lines="full">
+                <ion-label position="floating">Praga *</ion-label>
+                <ionic-selectable [formControlName]="'praga'" [items]="pragas" itemValueField="id" itemTextField="nome"
+                  [canSearch]="true" closeButtonText="Cancelar" searchFailText="'Nenhuma praga encontrada'"
+                  searchPlaceholder="Buscar praga" [hasVirtualScroll]="true">
+                </ionic-selectable>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-list>
+              <ion-item lines="full">
+                <ion-label position="floating">Quantidade *</ion-label>
+                <ion-input type="number" [formControlName]="'quantidade'"></ion-input>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+        <ion-button color="success" expand="block" [disabled]="!formPraga.valid || disableActions"
+          (click)="salvarDispositivoPraga()">
+          Salvar
+        </ion-button>
+      </form>
+      <div padding-top>
+        <ion-item-sliding *ngFor="let item of dispositivoPragas; let i = index">
+          <ion-item detail tappable>
+            <ion-label>
+              <h5 color="dark">{{ item.praga }} - {{ item.quantidade }}</h5>
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="start">
+            <ion-item-option color="danger" [disabled]="disableActions" (click)="remover(i)">
+              <ion-icon name="close-circle"></ion-icon>&nbsp;Apagar
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-content>

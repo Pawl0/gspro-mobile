@@ -1,0 +1,43 @@
+#rota {
+    position: relative;
+    margin-top: 40px;
+    // top: 5rem;
+
+    .img {
+        background-image: url("/assets/imagens/mapa_rota.jpg");
+        background-position: left 0px bottom -130px;
+        background-size: cover;
+        height: 6rem;
+    }
+}
+
+#quadro {
+    position: relative;
+    top: 7rem;
+
+    .img {
+        background-image: url("/assets/imagens/quadro_avisos.jpg");
+        background-position: left -8px bottom -85px;
+        background-size: 110%;
+        height: 6rem;
+    }
+}
+
+.update-card {
+    //height: 270px;
+    position: relative;
+    margin-top: 20px;
+    
+}
+
+.manutencao {
+    background-image: url("http://www.patrus.com.br/blogpatrus/wp-content/uploads/2017/05/manutencao-corretiva-entenda-o-que-e-e-saiba-como-economizar-1000x640.jpeg") !important;
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+ion-card-header, ion-card-content {
+    background-color: white;
+}

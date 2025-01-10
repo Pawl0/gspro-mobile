@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button [disabled]="!isValid" (click)="finalizar()">
+        Finalizar&nbsp;
+        <ion-icon name="save"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Informações técnicas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list-header color="primary">
+    <ion-text>
+      <h4>Serviço inicial</h4>
+    </ion-text>
+  </ion-list-header>
+  <ion-item>
+    <ion-label position="floating">Quantidade de tecnicos</ion-label>
+    <ion-input
+      clearInput
+      (ionChange)="checkValid()"
+      [(ngModel)]="inicialQtdTecnicos"
+      type="number"
+    ></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Quantidade de horas</ion-label>
+    <ion-input
+      clearInput
+      (ionChange)="checkValid()"
+      [(ngModel)]="inicialQtdHoras"
+      type="number"
+    ></ion-input>
+  </ion-item>
+  <ion-list-header color="primary">
+    <ion-text>
+      <h4>Serviço de manutenção</h4>
+    </ion-text>
+  </ion-list-header>
+  <ion-item>
+    <ion-label position="floating">Quantidade de tecnicos</ion-label>
+    <ion-input
+      clearInput
+      (ionChange)="checkValid()"
+      [(ngModel)]="manutencaoQtdTecnicos"
+      type="number"
+    ></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Quantidade de horas</ion-label>
+    <ion-input
+      clearInput
+      (ionChange)="checkValid()"
+      [(ngModel)]="manutencaoQtdHoras"
+      type="number"
+    ></ion-input>
+  </ion-item>
+  <ion-list-header color="primary">
+    <ion-text>
+      <h4>Observações técnicas</h4>
+    </ion-text>
+  </ion-list-header>
+  <ion-item>
+    <ion-input
+      [(ngModel)]="obsTecnicas"
+      placeholder="Digite sua observação..."
+      clearInput
+      type="text"
+    ></ion-input>
+  </ion-item>
+  <ion-list-header color="primary">
+    <ion-text>
+      <h4>Equipamentos</h4>
+    </ion-text>
+  </ion-list-header>
+  <ion-list>
+    <ion-item>
+      <ion-label>Escada</ion-label>
+      <ion-toggle [(ngModel)]="escada"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>FOG</ion-label>
+      <ion-toggle [(ngModel)]="fog"></ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>

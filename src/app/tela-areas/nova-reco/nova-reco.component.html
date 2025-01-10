@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="primary">
+      <ion-button (click)="voltar()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Recomendação</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="formReco">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Frase</ion-label>
+        <ionic-selectable [items]="listaFrases" itemValueField="id" itemTextField="recomendacao"
+          formControlName="recoFrase" closeButtonText="Cancelar" (onChange)="setarReco($event)"
+          [hasVirtualScroll]="true" #frase></ionic-selectable>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-text color="medium">
+          <p>{{ fraseDisplay }}</p>
+        </ion-text>
+      </ion-item>
+
+      <ion-item *ngIf="formReco.get('recoFrase').valid" lines="full">
+        <ion-label position="floating">Complete a frase ou faça uma obs.</ion-label>
+        <ion-input type="text" formControlName="recoComplemento"></ion-input>
+      </ion-item>
+
+      <ng-container *ngIf="inputImg; else pwa">
+        <ion-row *ngIf="formReco.get('recoFrase').valid" lines="full">
+          <ion-col>
+            <ion-button expand="block" (click)="pegarImg('camera')">
+              Câmera
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" (click)="pegarImg('galeria')">
+              Galeria
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ng-container>
+
+      <ng-template #pwa>
+        <ion-row *ngIf="formReco.get('recoFrase').valid" lines="full">
+          <ion-col>
+            <ion-button expand="block" (click)="imgPwa.click()">
+              Imagem
+            </ion-button>
+            <input type="file" hidden #imgPwa accept="image/*" (change)="pegarImg($event)" />
+          </ion-col>
+        </ion-row>
+      </ng-template>
+
+      <ion-row>
+        <ion-img src="{{ imgDisplay }}" *ngIf="imgDisplay"></ion-img>
+      </ion-row>
+    </ion-list>
+  </form>
+</ion-content>
+
+<ion-footer *ngIf="imgDisplay">
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="success" (click)="gravarDados()">Salvar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="primary">
+      <ion-button (click)="voltar()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Metodologia, método e produto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding-horizontal>
+  <form [formGroup]="formMetod">
+    <ion-list>
+      <ion-item lines="full">
+        <ion-label position="floating">Metodologia</ion-label>
+        <ionic-selectable [items]="listaMet" itemValueField="id" itemTextField="nome" formControlName="metodologia"
+          closeButtonText="Cancelar" (onChange)="gravarMetodologia($event)"></ionic-selectable>
+      </ion-item>
+
+      <ion-item lines="full" *ngIf="formMetod.get('metodologia').valid" padding-top>
+        <ion-label position="floating">Método</ion-label>
+        <ionic-selectable [items]="listaMetodo" itemValueField="id" itemTextField="nome" formControlName="metodo"
+          closeButtonText="Cancelar" (onChange)="gravarMetodo($event)"></ionic-selectable>
+      </ion-item>
+
+      <ion-item lines="full" *ngIf="formMetod.get('metodo').valid && !levantamento" padding-top>
+        <ion-label position="floating">Produto</ion-label>
+        <ionic-selectable [items]="listaProd" itemValueField="id" itemTextField="nome" formControlName="produto"
+          closeButtonText="Cancelar" (onChange)="gravarProd($event)"></ionic-selectable>
+      </ion-item>
+
+      <ion-item lines="full" *ngIf="
+          mostrarQtd || (levantamento && formMetod.get('metodologia').valid)
+        " padding-top>
+        <ion-label position="floating">Quantidade de módulos</ion-label>
+        <ion-input type="number" formControlName="qtdMod" (ionChange)="qtd()"></ion-input>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>
+
+<ion-footer *ngIf="mostrarFooter && formMetod.get('metodo').valid">
+  <ion-toolbar id="footer">
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" color="success" (click)="gravarDados()">Salvar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

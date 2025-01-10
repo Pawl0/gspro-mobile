@@ -1,0 +1,151 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="primary">
+      <ion-button (click)="fecharModal(id)">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>OS {{ id }}</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <!-- <ion-segment [(ngModel)]="segAtivo"> -->
+    <ion-segment>
+      <ion-segment-button value="reclamacoes" (click)="scrollTo($event)" *ngIf="exibirR" checked="marcarR">
+        RECLAM.
+      </ion-segment-button>
+      <ion-segment-button value="obs" (click)="scrollTo($event)" *ngIf="exibirO" checked="marcarO">
+        OBS.
+      </ion-segment-button>
+      <ion-segment-button value="solicitacoes" (click)="scrollTo($event)" *ngIf="exibirS" checked="marcarS">
+        SOLICIT.
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<!-- <ion-content [scrollEvents]="true" (ionScroll)="spy($event)"> -->
+<ion-content [scrollEvents]="true">
+  <div id="conteudoComplementos">
+    <ion-list id="obs" *ngIf="observacoes?.length > 0" class="full-tela">
+      <ion-list-header shape="round" color="primary">
+        <ion-label><strong>OBSERVAÇÕES</strong></ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let observacao of observacoes" lines="full" class="full-tela" padding-top>
+        <div class="text-muted" [ngClass]="{ negrito: observacao?.data >= data }">
+          <div>
+            <span *ngIf="observacao?.contratoTipo?.length > 5">
+              Tipo:
+              <ion-text color="primary">
+                {{ observacao?.contratoTipo }}
+              </ion-text>
+              <br /><br />
+            </span>
+            <span *ngIf="observacao?.contratoObs2?.length > 5">
+              Observação Técnica Contrato:
+              <ion-text color="primary">
+                {{ observacao?.contratoObs2 }}
+              </ion-text>
+              <br /><br />
+            </span>
+            <span *ngIf="observacao?.anteObs?.length > 5">
+              Observação da OS anterior:
+              <ion-text color="primary">{{ observacao?.anteObs }}</ion-text>
+              <br /><br />
+            </span>
+            <span *ngIf="observacao?.contratoObs?.length > 5">
+              Observação da OS:
+              <ion-text color="primary">{{ observacao?.contratoObs }}</ion-text>
+              <br /><br />
+            </span>
+            <span *ngIf="observacao?.proxObs?.length > 5">
+              Observação Proxímo Serviço:
+              <ion-text color="primary">{{ observacao?.proxObs }} </ion-text>
+              <br /><br />
+            </span>
+            <span *ngIf="observacao?.tecConf?.length > 5">
+              Confirmado Por:
+              <ion-text color="primary">
+                {{ observacao?.tecConf.trim() }}
+              </ion-text>
+              <br /><br />
+            </span>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <ion-list id="material" *ngIf="showMaterialSection()">
+      <ion-list-header shape="round" color="primary">
+        <ion-label><strong>MATERIAL</strong></ion-label>
+      </ion-list-header>
+      <ion-item lines="full">
+        <ion-grid>
+          <ion-row *ngFor="let dispositivo of dispositivos">
+            <ion-col>
+              {{ dispositivo.tipo }}:
+              <ion-text color="primary">
+                {{ dispositivo.quantidade }}
+              </ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col *ngIf="osData?.fog === 1">
+              <ion-text color="primary">FOG</ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col *ngIf="osData?.armadilha === 1">
+              <ion-text color="primary">ARMADILHA</ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col *ngIf="osData?.escada === 1">
+              <ion-text color="primary">ESCADA</ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col *ngIf="osData?.modulo === 1">
+              <ion-text color="primary">MÓDULO</ion-text>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
+
+    <ion-list id="reclamacoes" *ngIf="reclamacoes?.length > 0">
+      <ion-list-header shape="round" color="primary">
+        <ion-label><strong>Reclamações</strong></ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let reclamacao of reclamacoes" lines="full">
+        <div [ngClass]="{ negrito: reclamacao?.data >= data }">
+          <div class="row">
+            <div text-center>{{ reclamacao?.data | date : "dd/MM/yyyy" }}</div>
+            <br />
+          </div>
+          <div class="row" text-center>
+            {{ reclamacao?.conteudo }}
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <ion-list id="solicitacoes" *ngIf="solicitacoes?.length > 0">
+      <ion-list-header shape="round" color="primary">
+        <ion-label><strong>Solicitações</strong></ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let solicitacao of solicitacoes" lines="full" padding-top>
+        <div [ngClass]="{ negrito: solicitacao?.data >= data }">
+          <div class="row">
+            <div text-center>{{ solicitacao?.data | date : "dd/MM/yyyy" }}</div>
+            <br />
+          </div>
+          <div class="row" text-center>
+            {{ solicitacao?.conteudo }}
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

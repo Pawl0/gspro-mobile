@@ -1,0 +1,30 @@
+.segment {
+    background-color: #f5f5f5;
+    min-width: 32%;
+    margin-right: 1%;
+    height: 40px;
+    border: 2px solid #ffca00;
+    border-radius: 5px;
+}
+
+.pressed {
+    background-color:#ffca00;
+}
+
+.btngroup {
+    width: 30% !important;
+    margin-left: 40px !important;
+}
+
+.btngroup-in {
+    max-width: 80% !important;
+    min-width: 70% !important;
+    margin: 2px !important;
+    background-color:#ffca00 !important;
+    max-height: 40px !important;
+    min-height: 38px !important;
+}
+
+.label-praga {
+    font-size: 10px !important;
+}

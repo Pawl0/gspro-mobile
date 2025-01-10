@@ -1,0 +1,34 @@
+<ion-list>
+  <ion-list-header>
+    <ion-text color="success">
+      <h4>Executadas</h4>
+    </ion-text>
+  </ion-list-header>
+
+  <ion-item *ngFor="let item of listaExec">
+
+
+    <ion-spinner slot="start" *ngIf="item?.status !== 'Enviada'"></ion-spinner>
+    <ion-icon name="checkmark-circle" *ngIf="item?.status === 'Enviada'" color="success" slot="start" size="large">
+    </ion-icon>
+
+    <ion-label text-wrap>
+      <h3><strong>{{item?.nomeCliente}}</strong></h3>
+      <h3><strong>{{item?.status}}</strong></h3>
+      <p>
+        <ion-row>
+          <ion-col size="4">
+            Início:&nbsp;{{item?.horaInicio | date: 'HH:mm'}}
+          </ion-col>
+          <ion-col size="5">
+            Término:&nbsp;{{item?.horaFim | date: 'HH:mm'}}
+          </ion-col>
+          <ion-col size="3">
+            {{ item?.os }}
+          </ion-col>
+        </ion-row>
+      </p>
+    </ion-label>
+
+  </ion-item>
+</ion-list>
