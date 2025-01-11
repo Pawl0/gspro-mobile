@@ -14,7 +14,7 @@
     <ion-item>
       <ion-label position="floating">Justificativa</ion-label>
       <ionic-selectable [items]="listaFrasesNaoExec" itemValueField="id" itemTextField="frase" formControlName="frase"
-        closeButtonText="Cancelar" [hasVirtualScroll]="true"></ionic-selectable>
+        closeButtonText="Cancelar" #f (onChange)="setarMotivo(f.value)" [hasVirtualScroll]="true"></ionic-selectable>
     </ion-item>
 
     <ion-item lines="none">
