@@ -42,8 +42,8 @@
       <br />
       <ion-item>
         <ion-label position="floating">Franquia</ion-label>
-        <ionic-selectable [items]="franquias" itemValueField="id" itemTextField="nome"
-          closeButtonText="Cancelar"></ionic-selectable>
+        <ionic-selectable [items]="franquias" itemValueField="id" itemTextField="nome" closeButtonText="Cancelar" #f
+          (onChange)="setarFranquia(f.value)"></ionic-selectable>
       </ion-item>
     </ion-card-content>
   </ion-card>
