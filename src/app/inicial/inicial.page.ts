@@ -153,7 +153,7 @@ export class InicialPage implements OnInit {
   }
 
   async validarUUID() {
-    const status = this.checkForUUID();
+    const status = await this.checkForUUID();
     console.log('STATUS CONDITION: ' + status);
     this.pinDialog
       .prompt('Inserir PIN', 'Validar PIN', ['OK', 'Cancel'])
@@ -164,7 +164,7 @@ export class InicialPage implements OnInit {
               ' update first_entry set status = 1 '
             );
             this.access = 1;
-            console.log(uuid);
+            console.log('uuid with access 1:', uuid);
           } else {
             console.log('SENHA ERRADA');
           }
@@ -209,6 +209,7 @@ export class InicialPage implements OnInit {
     const uuid = await this.db.createQuery(
       'SELECT COUNT(*) AS qtd, status FROM first_entry where status = 1 '
     );
+    console.log('uuid: ', uuid);
     if (uuid[0] != undefined) {
       if (uuid[0].qtd <= 0) {
         this.access = 0;

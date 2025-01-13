@@ -1,114 +1,173 @@
-import { Injectable } from "@angular/core";
-import { Platform } from "@ionic/angular";
-import { SQLite, SQLiteObject } from "@ionic-native/sqlite/ngx";
+import { Injectable } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
+import {
+  CapacitorSQLite,
+  SQLiteConnection,
+  CapacitorSQLitePlugin,
+  SQLiteDBConnection,
+} from '@capacitor-community/sqlite';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class Database {
-  private db: SQLiteObject;
-  private dbName = "emops";
+  private dbName = 'emops';
+  private sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
+  isService: boolean = false;
+  platform!: string;
+  sqlitePlugin!: CapacitorSQLitePlugin;
+  native: boolean = false;
+  private db!: SQLiteDBConnection;
 
-  constructor(private sqlite: SQLite, private platform: Platform) {}
-
-  private createDatabase(): Promise<SQLiteObject> {
-    return this.platform.ready().then((readySource: string) => {
-      return this.sqlite
-        .create({
-          name: this.dbName || "emops.db",
-          location: "default",
-        })
-        .then((db: SQLiteObject) => {
-          this.db = db;
-          //this.dropTable(db).then((r) => {
-          this.createTableJson(db);
-          this.createTablePragaOs(db);
-          this.createTableProdutoOs(db);
-          this.createTableOS(db);
-          this.createTableArea(db);
-          this.createTableFristEntry(db);
-          this.createTableRotas(db);
-          this.createTableFranquia(db);
-          this.createTableFrase(db);
-          this.createTableFraseNaoExec(db);
-          this.createTablePraga(db);
-          this.createTableMetodologia(db);
-          this.createTableMetodo(db);
-          this.createTableProduto(db);
-          this.createTableProdutoMetodo(db);
-          this.createTableAreaOs(db);
-          this.createTableRecomendacao(db);
-          this.createTableDispositivo(db);
-          this.createTableLevDispositivo(db);
-          this.createTableOsDispositivo(db);
-          this.createTableDispositivoPraga(db);
-          this.createTableTecnico(db);
-          this.createTableModulo(db);
-          this.createTableComplemento(db);
-          this.createTableObs(db);
-          this.createTableDetalhes(db);
-          //})
-
-          return this.db;
-        })
-        .catch((error: Error) => {
-          console.log("Error on open or create database: ", error);
-          return Promise.reject(error.message || error);
-        });
+  constructor(private _platform: Platform) {
+    this._platform.ready().then(async (readySource: string) => {
+      console.log('Platform ready from', readySource);
+      this.db = await this.createDatabase();
     });
   }
 
-  getDb(newOpen?: boolean): Promise<SQLiteObject> {
-    if (newOpen) {
-      return this.createDatabase();
+  async initializePlugin() {
+    this.db = await this.sqlite.createConnection(
+      this.dbName,
+      false,
+      'no-encryption',
+      1,
+      false
+    );
+    await this.db.open();
+    return this.db;
+  }
+
+  // async initializePlugin(): Promise<boolean> {
+  //   console.log('initializePlugin');
+  //   this.platform = Capacitor.getPlatform();
+  //   console.log('this.platform: ', this.platform);
+  //   if (this.platform === 'ios' || this.platform === 'android')
+  //     this.native = true;
+  //   this.sqlitePlugin = CapacitorSQLite;
+  //   this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin);
+  //   this.isService = true;
+  //   return true;
+  // }
+
+  private async createDatabase(): Promise<SQLiteDBConnection> {
+    console.log('createDatabase');
+    await this.initializePlugin();
+    if (!this.db) {
+      console.log('Connection is undefined');
+      try {
+        this.db = await this.sqlite.retrieveConnection(this.dbName, false);
+      } catch (e) {
+        console.log('ERROR retrieveConnection: ', e);
+        this.initializePlugin();
+      }
     }
-    return this.db ? Promise.resolve(this.db) : this.createDatabase();
+    console.log('Connection is defined: ', this.db);
+    await this.createTables(this.db);
+    return this.db;
+
+    // return this.platform.ready().then((readySource: string) => {
+    // return this.sqliteConnection
+    //   .retrieveConnection(this.dbName, false)
+    //   .then((db) => {
+    //     this.db = db;
+    //     this.createTables(this.db);
+    //     //this.dropTable(db).then((r) => {
+    //     //})
+
+    //     return this.db;
+    //   })
+    //   .catch((error: Error) => {
+    //     console.log('Error on open or create database: ', error);
+    //     return Promise.reject(error.message || error);
+    //   });
+    // });
+  }
+
+  private async createTables(db: SQLiteDBConnection): Promise<void> {
+    console.log('creating tables with connection: ', db);
+    this.createTableJson(db);
+    this.createTablePragaOs(db);
+    this.createTableProdutoOs(db);
+    this.createTableOS(db);
+    this.createTableArea(db);
+    this.createTableFristEntry(db);
+    this.createTableRotas(db);
+    this.createTableFranquia(db);
+    this.createTableFrase(db);
+    this.createTableFraseNaoExec(db);
+    this.createTablePraga(db);
+    this.createTableMetodologia(db);
+    this.createTableMetodo(db);
+    this.createTableProduto(db);
+    this.createTableProdutoMetodo(db);
+    this.createTableAreaOs(db);
+    this.createTableRecomendacao(db);
+    this.createTableDispositivo(db);
+    this.createTableLevDispositivo(db);
+    this.createTableOsDispositivo(db);
+    this.createTableDispositivoPraga(db);
+    this.createTableTecnico(db);
+    this.createTableModulo(db);
+    this.createTableComplemento(db);
+    this.createTableObs(db);
+    this.createTableDetalhes(db);
+  }
+
+  async getDb(newOpen?: boolean): Promise<SQLiteDBConnection> {
+    console.log('getDb newOpen: ', newOpen);
+    if (newOpen) {
+      return await this.createDatabase();
+    }
+    console.log('this.db: ', this.db);
+    return this.db ?? (await this.createDatabase());
   }
 
   // INSERT
 
   async insert(table: string, rows: string, data: any) {
     let i = 0;
-    const numParams = rows.split(",").length;
-    let params = "?";
+    const numParams = rows.split(',').length;
+    let params = '?';
     for (i = 1; i < numParams; i++) {
-      params += ", ?";
+      params += ', ?';
     }
     return await this.getDb().then(async (database) => {
       await database
-        .executeSql(
-          "INSERT INTO " + table + " (" + rows + ") VALUES (" + params + ")",
+        .query(
+          'INSERT INTO ' + table + ' (' + rows + ') VALUES (' + params + ')',
           data
         )
         .then((res) => {
-          console.log("Dados inseridos com sucesso! " + table);
+          console.log('Dados inseridos com sucesso! ' + table);
           return res;
         })
         .catch((err) => {
           console.log(
-            "Dados Nao inseridos " + table + " ----- " + "DATA:: " + data
+            'Dados Nao inseridos ' + table + ' ----- ' + 'DATA:: ' + data
           );
           console.log(err.message);
         });
     });
   }
 
-  async update(table: string, rows: any, data: any, conditional: string = "") {
+  async update(table: string, rows: any, data: any, conditional: string = '') {
     return await this.getDb().then(async (database) => {
       await database
-        .executeSql(
-          `UPDATE ${table} SET ${rows.split(",").join(" = ?, ")} = ? ${
-            conditional ? " WHERE " + conditional : ""
+        .query(
+          `UPDATE ${table} SET ${rows.split(',').join(' = ?, ')} = ? ${
+            conditional ? ' WHERE ' + conditional : ''
           } `,
           data
         )
         .then((res) => {
-          console.log("Dados atualizados com sucesso! " + table);
+          console.log('Dados atualizados com sucesso! ' + table);
           return res;
         })
         .catch((err) => {
           console.log(
-            "Dados Nao atualizados " + table + " ----- " + "DATA:: " + data
+            'Dados Nao atualizados ' + table + ' ----- ' + 'DATA:: ' + data
           );
           console.log(err.message);
         });
@@ -117,21 +176,21 @@ export class Database {
 
   insertReplace(table, rows, data) {
     let i = 0;
-    const numParams = rows.split(",").length;
-    let params = "?";
+    const numParams = rows.split(',').length;
+    let params = '?';
     for (i = 1; i < numParams; i++) {
-      params += ", ?";
+      params += ', ?';
     }
     this.getDb().then((database) => {
       database
-        .executeSql(
-          "INSERT OR REPLACE INTO " +
+        .query(
+          'INSERT OR REPLACE INTO ' +
             table +
-            " (" +
+            ' (' +
             rows +
-            ") VALUES (" +
+            ') VALUES (' +
             params +
-            ")",
+            ')',
           data
         )
         .then((res) => {
@@ -139,7 +198,7 @@ export class Database {
         })
         .catch((err) => {
           console.log(
-            "Dados Nao inseridos " + table + " ----- " + "DATA:: " + data
+            'Dados Nao inseridos ' + table + ' ----- ' + 'DATA:: ' + data
           );
           console.log(err.message);
         });
@@ -149,7 +208,7 @@ export class Database {
   async insertOs(data, areas) {
     await this.getDb().then((database) => {
       database
-        .executeSql(
+        .query(
           `INSERT INTO os 
             (
               id,
@@ -197,14 +256,13 @@ export class Database {
               ${data.armadilha},
               ${data.modulo},
               ${data.renovacao}
-            )`,
-          []
+            )`
         )
         .then(async (res) => {
           //console.log("Dados da OS inseridos com sucesso!");
           if (areas && areas.length > 0) {
             for (const area of areas) {
-              this.insert("areaOs", "idArea, os, status, nova", [
+              this.insert('areaOs', 'idArea, os, status, nova', [
                 area.id,
                 data.id,
                 false,
@@ -212,7 +270,7 @@ export class Database {
               ]);
               if (area.modulo && area.modulo.length > 0) {
                 for (const modulo of area.modulo) {
-                  this.insert("modulo", "idModulo, idArea, nome, qtd, os", [
+                  this.insert('modulo', 'idModulo, idArea, nome, qtd, os', [
                     modulo.id,
                     area.id,
                     modulo.nome,
@@ -226,8 +284,8 @@ export class Database {
 
           for (const dispositivo of data.dispositivos) {
             this.insert(
-              "osDispositivo",
-              "id_dispositivo, id_area, sequencia, tipo, deConsumo, os",
+              'osDispositivo',
+              'id_dispositivo, id_area, sequencia, tipo, deConsumo, os',
               [
                 dispositivo.id,
                 dispositivo.id_area,
@@ -241,8 +299,8 @@ export class Database {
             if (dispositivo.pragas && dispositivo.pragas.length > 0) {
               for (const dispositivoPraga of dispositivo.pragas) {
                 this.insert(
-                  "osDispositivoPraga",
-                  "id_dispositivo, id_praga, quantidade, praga, consumido, os",
+                  'osDispositivoPraga',
+                  'id_dispositivo, id_praga, quantidade, praga, consumido, os',
                   [
                     dispositivo.id,
                     dispositivoPraga.id_praga,
@@ -267,24 +325,22 @@ export class Database {
   async getAll(table) {
     const res = [];
     await this.getDb().then(async (database) => {
-      await database
-        .executeSql("SELECT * FROM " + table, [])
-        .then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
-          }
-        });
+      await database.query('SELECT * FROM ' + table).then(async (data) => {
+        for (let i = 0; i < data.values.length; i++) {
+          await res.push(data.values[i]);
+        }
+      });
     });
     return res;
   }
 
   async getById(table, id) {
     const res = [];
-    const sql = "SELECT * FROM " + table + " WHERE id = " + id;
+    const sql = 'SELECT * FROM ' + table + ' WHERE id = ' + id;
     await this.getDb().then(async (database) => {
-      await database.executeSql(sql, []).then(async (data) => {
-        for (let i = 0; i < data.rows.length; i++) {
-          await res.push(data.rows.item(i));
+      await database.query(sql).then(async (data) => {
+        for (let i = 0; i < data.values.length; i++) {
+          await res.push(data.values[i]);
         }
       });
     });
@@ -295,10 +351,10 @@ export class Database {
     const res = [];
     await this.getDb().then(async (database) => {
       await database
-        .executeSql("SELECT " + fields + " FROM " + table + where, [])
+        .query('SELECT ' + fields + ' FROM ' + table + where)
         .then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
     });
@@ -309,10 +365,10 @@ export class Database {
     const res = [];
     await this.getDb().then(async (database) => {
       await database
-        .executeSql("SELECT * FROM " + table + " WHERE os = " + os, [])
+        .query('SELECT * FROM ' + table + ' WHERE os = ' + os)
         .then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
     });
@@ -325,9 +381,9 @@ export class Database {
       os;
     const res = [];
     await this.getDb().then(async (database) => {
-      await database.executeSql(sql, []).then(async (data) => {
-        for (let i = 0; i < data.rows.length; i++) {
-          await res.push(data.rows.item(i));
+      await database.query(sql).then(async (data) => {
+        for (let i = 0; i < data.values.length; i++) {
+          await res.push(data.values[i]);
         }
       });
     });
@@ -355,9 +411,9 @@ export class Database {
     const rows = [];
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            rows.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            rows.push(data.values[i]);
           }
         });
       });
@@ -387,9 +443,9 @@ export class Database {
     const res = [];
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
       });
@@ -415,9 +471,9 @@ export class Database {
     const res = [];
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            res.push(data.values[i]);
           }
         });
       });
@@ -459,9 +515,9 @@ export class Database {
     //console.log(sql);
     const res = [];
     await this.getDb().then(async (database) => {
-      await database.executeSql(sql, []).then(async (data) => {
-        for (let i = 0; i < data.rows.length; i++) {
-          await res.push(data.rows.item(i));
+      await database.query(sql).then(async (data) => {
+        for (let i = 0; i < data.values.length; i++) {
+          await res.push(data.values[i]);
         }
       });
     });
@@ -474,9 +530,9 @@ export class Database {
         AS B ON A.id = B.idArea  WHERE B.status = "true" AND B.os = ` + os;
     const res = [];
     await this.getDb().then(async (database) => {
-      await database.executeSql(sql, []).then(async (data) => {
-        for (let i = 0; i < data.rows.length; i++) {
-          res.push(data.rows.item(i));
+      await database.query(sql).then(async (data) => {
+        for (let i = 0; i < data.values.length; i++) {
+          res.push(data.values[i]);
         }
       });
     });
@@ -487,13 +543,10 @@ export class Database {
     const res = [];
     await this.getDb().then(async (database) => {
       await database
-        .executeSql(
-          "SELECT * FROM " + table + " WHERE franquia = " + franquia,
-          []
-        )
+        .query('SELECT * FROM ' + table + ' WHERE franquia = ' + franquia)
         .then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
     });
@@ -501,14 +554,14 @@ export class Database {
   }
 
   async getOsByStatus(status) {
-    const sql = "SELECT * FROM os WHERE status = " + status;
+    const sql = 'SELECT * FROM os WHERE status = ' + status;
     const res = [];
     ////console.log(sql);
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
       });
@@ -520,14 +573,14 @@ export class Database {
   }
 
   async getOsExecuted() {
-    const sql = "SELECT * FROM os WHERE status = 1 or status = 2";
+    const sql = 'SELECT * FROM os WHERE status = 1 or status = 2';
     const res = [];
     //console.log(sql);
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
       });
@@ -539,13 +592,13 @@ export class Database {
   }
 
   async getAllOsExecuted() {
-    const sql = "SELECT * FROM os WHERE status = 1 or status = 4";
+    const sql = 'SELECT * FROM os WHERE status = 1 or status = 4';
     const res = [];
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
       });
@@ -556,13 +609,13 @@ export class Database {
   }
 
   async getAllOsNotExecuted() {
-    const sql = "SELECT * FROM os WHERE status = 2 or status = 3";
+    const sql = 'SELECT * FROM os WHERE status = 2 or status = 3';
     const res = [];
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
       });
@@ -577,9 +630,9 @@ export class Database {
     const res = [];
     try {
       await this.getDb().then(async (database) => {
-        await database.executeSql(sql, []).then(async (data) => {
-          for (let i = 0; i < data.rows.length; i++) {
-            await res.push(data.rows.item(i));
+        await database.query(sql).then(async (data) => {
+          for (let i = 0; i < data.values.length; i++) {
+            await res.push(data.values[i]);
           }
         });
       });
@@ -595,7 +648,7 @@ export class Database {
   deleteAll(table) {
     return this.getDb().then((database) => {
       database
-        .executeSql("DELETE FROM " + table)
+        .query('DELETE FROM ' + table)
         .then((res) => {
           // console.log("Tabela " + table + " zerada com sucesso!");
         })
@@ -608,10 +661,10 @@ export class Database {
   deleteByOs(table, os) {
     return this.getDb().then((database) => {
       database
-        .executeSql("DELETE FROM " + table + " WHERE os = " + os)
+        .query('DELETE FROM ' + table + ' WHERE os = ' + os)
         .then((res) => {
           console.log(
-            "Dados " + table + " com os = " + os + "zerada com sucesso!"
+            'Dados ' + table + ' com os = ' + os + 'zerada com sucesso!'
           );
         })
         .catch((err) => {
@@ -623,8 +676,8 @@ export class Database {
   deleteAreaOsExecuted() {
     return this.getDb().then((database) => {
       database
-        .executeSql(
-          "DELETE FROM areaOs WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)"
+        .query(
+          'DELETE FROM areaOs WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)'
         )
         .then((res) => {
           //console.log("Dados das areaOs deletado sucesso!");
@@ -638,8 +691,8 @@ export class Database {
   deleteProdutoOsExecuted() {
     return this.getDb().then((database) => {
       database
-        .executeSql(
-          "DELETE FROM produtoOs WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)"
+        .query(
+          'DELETE FROM produtoOs WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)'
         )
         .then((res) => {
           //console.log("Dados das produtoOs deletado sucesso!");
@@ -653,8 +706,8 @@ export class Database {
   deletePragaOsExecuted() {
     return this.getDb().then((database) => {
       database
-        .executeSql(
-          "DELETE FROM pragaOs WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)"
+        .query(
+          'DELETE FROM pragaOs WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)'
         )
         .then((res) => {
           //console.log("Dados das pragaOs deletado sucesso!");
@@ -668,9 +721,9 @@ export class Database {
   deleteOsExecuted() {
     return this.getDb().then((database) => {
       database
-        .executeSql("DELETE FROM os WHERE status in (3, 4)")
+        .query('DELETE FROM os WHERE status in (3, 4)')
         .then((res) => {
-          console.log("OS executadas e enviadas deletadas!");
+          console.log('OS executadas e enviadas deletadas!');
         })
         .catch((err) => {
           console.log(err);
@@ -681,8 +734,8 @@ export class Database {
   async deleteDispositivoLevExecuted() {
     const database = await this.getDb();
     database
-      .executeSql(
-        "DELETE FROM levDispositivo WHERE id_levantamento in (SELECT id FROM os WHERE status = 3 OR status = 4)"
+      .query(
+        'DELETE FROM levDispositivo WHERE id_levantamento in (SELECT id FROM os WHERE status = 3 OR status = 4)'
       )
       .then((res) => {})
       .catch((err) => {
@@ -693,8 +746,8 @@ export class Database {
   async deleteDispositivoOsExecuted() {
     const database = await this.getDb();
     database
-      .executeSql(
-        "DELETE FROM osDispositivo WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)"
+      .query(
+        'DELETE FROM osDispositivo WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)'
       )
       .then((res) => {})
       .catch((err) => {
@@ -705,8 +758,8 @@ export class Database {
   async deleteDispositivoPragaOsExecuted() {
     const database = await this.getDb();
     database
-      .executeSql(
-        "DELETE FROM osDispositivoPraga WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)"
+      .query(
+        'DELETE FROM osDispositivoPraga WHERE os in (SELECT id FROM os WHERE status = 3 OR status = 4)'
       )
       .then((res) => {})
       .catch((err) => {
@@ -720,22 +773,22 @@ export class Database {
     }
     return await this.getDb().then(async (database) => {
       await database
-        .executeSql("DELETE FROM " + table + " WHERE id = " + id)
+        .query('DELETE FROM ' + table + ' WHERE id = ' + id)
         .then((res) => {
-          console.log("Deletado com sucesso! " + table + " - Id: " + id);
+          console.log('Deletado com sucesso! ' + table + ' - Id: ' + id);
           return res;
         })
 
         .catch((err) => {
           console.log(
-            "Erro ao deletar: " + table + " - Id: " + id + " - Err: " + err
+            'Erro ao deletar: ' + table + ' - Id: ' + id + ' - Err: ' + err
           );
         });
     });
   }
 
   async createTableOS(db) {
-    // db.executeSql('DROP TABLE os');
+    // db.execute('DROP TABLE os');
     const sql = `CREATE TABLE IF NOT EXISTS os (
             id                     INTEGER  NOT NULL PRIMARY KEY
             ,status                INT  NOT NULL
@@ -777,18 +830,18 @@ export class Database {
     //        //console.log(sql);
 
     return await db
-      .executeSql(sql)
+      .execute(sql)
       .then((aguardando) => {
         //console.log("Tabela aguardando criada com sucesso");
       })
       .catch((err) => {
-        console.log("Erro ao criar tabela os");
+        console.log('Erro ao criar tabela os');
       });
   }
 
   async createTablePraga(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS praga (
             id INT NULL,
             nome VARCHAR(50) NOT NULL
@@ -804,7 +857,7 @@ export class Database {
 
   async createTableFraseNaoExec(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS fraseNaoExec (
             id INT  NOT NULL PRIMARY KEY,
             culpa INT NULL,
@@ -821,9 +874,9 @@ export class Database {
   }
 
   async createTableAreaOs(db) {
-    //   db.executeSql('DROP TABLE areaOs');
+    //   db.execute('DROP TABLE areaOs');
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS areaOs (
             id INTEGER  NOT NULL PRIMARY KEY,
             idArea INT NOT NULL,
@@ -842,7 +895,7 @@ export class Database {
 
   async createTableMd5(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS md5 (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             table TEXT NOT NULL UNIQUE,
@@ -859,9 +912,9 @@ export class Database {
   }
 
   async createTablePragaOs(db) {
-    // await db.executeSql('DROP TABLE pragaOs');
+    // await db.execute('DROP TABLE pragaOs');
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS pragaOs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                idArea INTEGER NOT NULL,
@@ -880,7 +933,7 @@ export class Database {
 
   async createTableFrase(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS frase (
             id INTEGER  NOT NULL PRIMARY KEY,
             recomendacao VARCHAR(255) NOT NULL
@@ -896,7 +949,7 @@ export class Database {
 
   async createTableDetalhes(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS detalhe (
             id INTEGER  NOT NULL UNIQUE,
             escada INT NOT NULL,
@@ -918,7 +971,7 @@ export class Database {
 
   async createTableArea(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS area (
             id INTEGER  NOT NULL PRIMARY KEY,
             nome VARCHAR(50) NOT NULL
@@ -933,9 +986,9 @@ export class Database {
   }
 
   async createTableModulo(db) {
-    // db.executeSql('DROP TABLE modulo');
+    // db.execute('DROP TABLE modulo');
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS modulo (
             id INTEGER  NOT NULL PRIMARY KEY,
             idModulo INTEGER NOT NULL,
@@ -954,9 +1007,9 @@ export class Database {
   }
 
   async createTableMetodologia(db) {
-    // db.executeSql('DROP table metodologia');
+    // db.execute('DROP table metodologia');
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS metodologia (
             id INT  NOT NULL PRIMARY KEY,
             nome VARCHAR(50) NOT NULL
@@ -966,14 +1019,14 @@ export class Database {
         // console.log("Tabela metodologia criada com sucesso");
       })
       .catch((err) => {
-        console.log("Erro ao criar tabela metodologia");
+        console.log('Erro ao criar tabela metodologia');
         console.log(err);
       });
   }
 
   async createTableMetodo(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS metodo (
             id INT  NOT NULL PRIMARY KEY,
             nome VARCHAR(50) NOT NULL,
@@ -985,14 +1038,14 @@ export class Database {
         // console.log("Tabela metodo criada com sucesso");
       })
       .catch((err) => {
-        console.log("Erro ao criar tabela metodo");
+        console.log('Erro ao criar tabela metodo');
         console.log(err);
       });
   }
 
   async createTableProduto(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS produto (
             id INT  NOT NULL PRIMARY KEY,
             nome VARCHAR(50) NOT NULL,
@@ -1003,15 +1056,15 @@ export class Database {
         // console.log("Tabela produto criada com sucesso");
       })
       .catch((err) => {
-        console.log("Erro ao criar tabela produto");
+        console.log('Erro ao criar tabela produto');
         console.log(err);
       });
   }
 
   async createTableProdutoMetodo(db) {
-    // await db.executeSql('DROP TABLE produtoMetodo');
+    // await db.execute('DROP TABLE produtoMetodo');
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS produtoMetodo (
             id_metodo int,
             id_produto int,
@@ -1022,14 +1075,14 @@ export class Database {
         // console.log("Tabela produtoMetodo criada com sucesso");
       })
       .catch((err) => {
-        console.log("Erro ao criar tabela produtoMetodo");
+        console.log('Erro ao criar tabela produtoMetodo');
         console.log(err);
       });
   }
 
   async createTableTecnico(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS tecnico (
             id INTEGER  NOT NULL PRIMARY KEY,
             nome VARCHAR(50) NOT NULL,
@@ -1046,7 +1099,7 @@ export class Database {
 
   async createTableFranquia(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS franquia (
             id          INT  NOT NULL PRIMARY KEY
             ,nome        VARCHAR(50) NOT NULL
@@ -1064,7 +1117,7 @@ export class Database {
 
   async createTableFristEntry(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS first_entry (
         id INT  NOT NULL PRIMARY KEY
         ,id_franquia INT   NULL 
@@ -1075,17 +1128,17 @@ export class Database {
         )`
       )
       .then((FristEntry) => {
-        console.log("Tabela FristEntry criada com sucesso");
+        console.log('Tabela FristEntry criada com sucesso');
       })
       .catch((err) => {
         console.log(err);
-        console.log("Tabela FristEntry NAO criada com sucesso");
+        console.log('Tabela FristEntry NAO criada com sucesso');
       });
   }
 
   async createTableRotas(db) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS rotas (
         id INT  NOT NULL PRIMARY KEY
         ,id_rota INT   NULL 
@@ -1094,17 +1147,17 @@ export class Database {
         )`
       )
       .then((FristEntry) => {
-        console.log("Tabela rotas criada com sucesso");
+        console.log('Tabela rotas criada com sucesso');
       })
       .catch((err) => {
         console.log(err);
-        console.log("Tabela rotas NAO criada com sucesso");
+        console.log('Tabela rotas NAO criada com sucesso');
       });
   }
 
-  async createTableJson(db) {
+  async createTableJson(db: SQLiteDBConnection) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS json (
             id INTEGER PRIMARY KEY AUTOINCREMENT
             ,os         INT  NOT NULL
@@ -1116,14 +1169,14 @@ export class Database {
         // console.log("Tabela json criada com sucesso");
       })
       .catch((err) => {
-        console.log("Erro ao criar tabela json");
+        console.log('Erro ao criar tabela json');
         console.log(err);
       });
   }
 
   async createTableObs(db) {
     return await db
-      .executeSql(
+      .execute(
         `
         CREATE TABLE IF NOT EXISTS obs (
              os INT NOT NULL
@@ -1149,9 +1202,9 @@ export class Database {
   }
 
   async createTableComplemento(db) {
-    // await db.executeSql('drop table complemento');
+    // await db.execute('drop table complemento');
     return await db
-      .executeSql(
+      .execute(
         `
         CREATE TABLE IF NOT EXISTS complemento (
              id INTEGER PRIMARY KEY AUTOINCREMENT
@@ -1165,14 +1218,14 @@ export class Database {
         // console.log("Tabela complemento criada com sucesso");
       })
       .catch((err) => {
-        console.log("ANO INSERIRIIRIRIRIR CONMOCPALEMENTO err");
+        console.log('ANO INSERIRIIRIRIRIR CONMOCPALEMENTO err');
       });
   }
 
   async createTableRecomendacao(db) {
-    // await db.executeSql("DROP TABLE recomendacao");
+    // await db.execute("DROP TABLE recomendacao");
     return await db
-      .executeSql(
+      .execute(
         `
         CREATE TABLE IF NOT EXISTS recomendacao (
             id INTEGER PRIMARY KEY AUTOINCREMENT
@@ -1191,9 +1244,9 @@ export class Database {
       });
   }
 
-  async createTableDispositivo(db: SQLiteObject) {
+  async createTableDispositivo(db: any) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS dispositivo (
           id INT  NOT NULL PRIMARY KEY,
           nome VARCHAR(255) NOT NULL,
@@ -1201,16 +1254,16 @@ export class Database {
       )`
       )
       .then((_res) => {
-        console.log("Tabela dispositivo criada com sucesso");
+        console.log('Tabela dispositivo criada com sucesso');
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  async createTableLevDispositivo(db: SQLiteObject) {
+  async createTableLevDispositivo(db: any) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS levDispositivo (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_levantamento INTEGER NOT NULL,
@@ -1220,16 +1273,16 @@ export class Database {
           )`
       )
       .then((_res) => {
-        console.log("Tabela levDispositivo criada com sucesso");
+        console.log('Tabela levDispositivo criada com sucesso');
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  async createTableOsDispositivo(db: SQLiteObject) {
+  async createTableOsDispositivo(db: any) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS osDispositivo (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_dispositivo INTEGER NOT NULL,
@@ -1241,16 +1294,16 @@ export class Database {
        )`
       )
       .then((_res) => {
-        console.log("Tabela osDispositivo criada com sucesso");
+        console.log('Tabela osDispositivo criada com sucesso');
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  async createTableDispositivoPraga(db: SQLiteObject) {
+  async createTableDispositivoPraga(db: any) {
     return await db
-      .executeSql(
+      .execute(
         `CREATE TABLE IF NOT EXISTS osDispositivoPraga (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_dispositivo INTEGER NOT NULL,
@@ -1262,7 +1315,7 @@ export class Database {
        )`
       )
       .then((res) => {
-        console.log("Tabela osDispositivoPraga criada com sucesso");
+        console.log('Tabela osDispositivoPraga criada com sucesso');
       })
       .catch((err) => {
         console.log(err);
@@ -1270,9 +1323,9 @@ export class Database {
   }
 
   async createTableProdutoOs(db) {
-    //  await db.executeSql("DROP TABLE produtoOs");
+    //  await db.execute("DROP TABLE produtoOs");
     return await db
-      .executeSql(
+      .execute(
         `
         CREATE TABLE IF NOT EXISTS produtoOs (
              id INTEGER PRIMARY KEY AUTOINCREMENT
@@ -1295,28 +1348,28 @@ export class Database {
 
   async dropTable(db) {
     const tables = [
-      "recomendacao",
-      "complemento",
-      "obs",
-      "franquia",
-      "tecnico",
-      "produtoMetodo",
-      "produto",
-      "metodo",
-      "metodologia",
-      "modulo",
-      "area",
-      "areaOs",
-      "frase",
-      "fraseNaoExec",
-      "praga",
-      "os",
-      "produtoOs",
-      "pragaOs",
-      "json",
+      'recomendacao',
+      'complemento',
+      'obs',
+      'franquia',
+      'tecnico',
+      'produtoMetodo',
+      'produto',
+      'metodo',
+      'metodologia',
+      'modulo',
+      'area',
+      'areaOs',
+      'frase',
+      'fraseNaoExec',
+      'praga',
+      'os',
+      'produtoOs',
+      'pragaOs',
+      'json',
     ];
     return await tables.forEach((table) => {
-      db.executeSql("DROP TABLE " + table);
+      db.execute('DROP TABLE ' + table);
     });
   }
 }

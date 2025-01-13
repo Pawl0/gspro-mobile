@@ -22,7 +22,6 @@ import { File } from '@ionic-native/file/ngx';
 import { Network } from '@ionic-native/network/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
-import { SQLite } from '@ionic-native/sqlite/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 import { AppComponent } from './app.component';
@@ -64,7 +63,6 @@ import { LocalStorageService } from 'ngx-webstorage';
     FileOpener,
     FileTransferObject,
     Toast,
-    SQLite,
     BackgroundMode,
     InAppBrowser,
     Network,
