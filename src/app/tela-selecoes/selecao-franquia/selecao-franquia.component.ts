@@ -111,8 +111,11 @@ export class SelecaoFranquiaComponent implements OnInit {
       spinner: 'dots',
     });
 
-    await loading.present();
-
-    this.franquias = await this.franquiaService.getFranquias();
+    try {
+      await loading.present();
+      this.franquias = await this.franquiaService.getFranquias();
+    } finally {
+      loading.dismiss();
+    }
   }
 }

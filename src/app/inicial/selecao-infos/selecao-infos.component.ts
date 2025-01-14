@@ -96,10 +96,12 @@ export class SelecaoInfosComponent implements OnInit {
       spinner: 'dots',
     });
 
-    await loading.present();
-    this.franquias = await this.franquiasData;
-
-    loading.dismiss();
+    try {
+      await loading.present();
+      this.franquias = await this.franquiasData;
+    } finally {
+      loading.dismiss();
+    }
   }
 
   async formInicial() {
