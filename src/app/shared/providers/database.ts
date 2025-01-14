@@ -818,7 +818,7 @@ export class Database {
             ,horaInfo              VARCHAR(30) NULL
             ,dataExecucao          VARCHAR(30) NULL
             ,nome                  VARCHAR (50) NULL
-            ,rg                    VARCHAR(15) NULL
+            ,cpf                    VARCHAR(11) NULL
             ,assinatura            TEXT NULL
             ,obsGeral              VARCHAR(255) NULL
             ,obsProximo            VARCHAR(255) NULL

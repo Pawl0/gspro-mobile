@@ -60,7 +60,7 @@ export class TelaAssinaturaPage implements OnInit {
 
     this.formCliente = this.fb.group({
       nome: [null, [Validators.required, Validators.minLength(3)]],
-      rg: [null],
+      cpf: [null],
       obsGeral: [null, Validators.maxLength(200)],
       obsProximo: [null, Validators.maxLength(200)],
     });
@@ -107,8 +107,8 @@ export class TelaAssinaturaPage implements OnInit {
     this.db.createQuery(
       'UPDATE os set  nome = "' +
         dados.nome +
-        '", rg = "' +
-        dados.rg +
+        '", cpf = "' +
+        dados.cpf +
         '", obsGeral = "' +
         dados.obsGeral +
         '", obsProximo = "' +
@@ -125,7 +125,7 @@ export class TelaAssinaturaPage implements OnInit {
     return {
       os: this.ordemDetalhes.id,
       nome: this.formCliente.get('nome').value,
-      rg: this.formCliente.get('rg').value,
+      cpf: this.formCliente.get('cpf').value,
       obsGeral: this.formCliente.get('obsGeral').value,
       obsProximo: this.formCliente.get('obsProximo').value,
     };
@@ -136,7 +136,7 @@ export class TelaAssinaturaPage implements OnInit {
     if (this.os.length > 0) {
       this.formCliente.patchValue({
         nome: this.os[0].nome,
-        rg: this.os[0].rg,
+        cpf: this.os[0].cpf,
         obsGeral: this.os[0].obsGeral,
         obsProximo: this.os[0].obsProximo,
       });

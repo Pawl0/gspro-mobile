@@ -1,25 +1,25 @@
-import { AreasDbService } from "src/app/shared/servicos/areas-db.service";
-import { Injectable } from "@angular/core";
-import { NavController, AlertController } from "@ionic/angular";
-import { HttpClient } from "@angular/common/http";
-import { ComplementosService } from "./complementos.service";
-import { LocalStorage } from "ngx-webstorage";
-import { Database } from "src/app/shared/providers/database";
-import { MetodologiasService } from "./metodologias.service";
-import { Network } from "@ionic-native/network/ngx";
-import { environment } from "src/environments/environment";
-import { Device } from "@ionic-native/device/ngx";
-import { timeout } from "rxjs/operators";
+import { AreasDbService } from 'src/app/shared/servicos/areas-db.service';
+import { Injectable } from '@angular/core';
+import { NavController, AlertController } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
+import { ComplementosService } from './complementos.service';
+import { LocalStorage } from 'ngx-webstorage';
+import { Database } from 'src/app/shared/providers/database';
+import { MetodologiasService } from './metodologias.service';
+import { Network } from '@ionic-native/network/ngx';
+import { environment } from 'src/environments/environment';
+import { Device } from '@ionic-native/device/ngx';
+import { timeout } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class OsService {
-  @LocalStorage("todasOrdensRota") todasOrdensRota: any;
-  @LocalStorage("infoiniciais") infoiniciais: any;
-  @LocalStorage("api") api: string;
-  @LocalStorage("levantamento") levantamento: boolean;
-  @LocalStorage("detalhesTecnicos") detalhesTecnicos: any;
+  @LocalStorage('todasOrdensRota') todasOrdensRota: any;
+  @LocalStorage('infoiniciais') infoiniciais: any;
+  @LocalStorage('api') api: string;
+  @LocalStorage('levantamento') levantamento: boolean;
+  @LocalStorage('detalhesTecnicos') detalhesTecnicos: any;
 
   version: string;
 
@@ -38,7 +38,7 @@ export class OsService {
 
   async enviarOs() {
     return new Promise(async (resolve, reject) => {
-      let appMessage = "";
+      let appMessage = '';
       let status = 1;
       const executadas = await this.db.getOsExecuted();
       if (executadas.length > 0) {
@@ -46,7 +46,7 @@ export class OsService {
           const envio: any = await this.sendToServer(osExec);
           if (envio !== undefined && envio !== null) {
             appMessage = envio.app;
-            if (envio.message === "success") {
+            if (envio.message === 'success') {
               // const alert = await this.alertCtrl.create({
               //   message: "Servicos enviados com successo!"
               // });
@@ -63,13 +63,13 @@ export class OsService {
         }
         if (status == 1) {
           const alert = await this.alertCtrl.create({
-            message: "Servicos enviados com successo!",
+            message: 'Servicos enviados com successo!',
           });
           await alert.present();
         } else {
           const alert = await this.alertCtrl.create({
             message:
-              "Erro ao enviar algum dos servicos. verifique sua conexao com a internet, caso o erro persista entre em contato com seu adminstrador.",
+              'Erro ao enviar algum dos servicos. verifique sua conexao com a internet, caso o erro persista entre em contato com seu adminstrador.',
           });
           await alert.present();
         }
@@ -81,14 +81,14 @@ export class OsService {
   async sendToServer(osExec) {
     let json: any;
     const api = await this.db.createQuery(
-      "SELECT api_franquia FROM first_entry WHERE id = 1"
+      'SELECT api_franquia FROM first_entry WHERE id = 1'
     );
-    let endPoint = api[0].api_franquia + "postDataApp";
-    console.log("API OS: " + endPoint);
+    let endPoint = api[0].api_franquia + 'postDataApp';
+    console.log('API OS: ' + endPoint);
 
     if (this.levantamento) {
-      endPoint = api[0].api_franquia + "postLevantamentosApp";
-      console.log("API OS LEV: " + endPoint);
+      endPoint = api[0].api_franquia + 'postLevantamentosApp';
+      console.log('API OS LEV: ' + endPoint);
       if (osExec.status === 1) {
         json = await this.makeJsonOsLevantamento(osExec.id);
       } else if (osExec.status === 2) {
@@ -100,7 +100,7 @@ export class OsService {
       json = await this.makeJsonOsNaoExec(osExec.id);
     }
 
-    await this.db.insert("json", "os, json, status", [
+    await this.db.insert('json', 'os, json, status', [
       osExec.id,
       JSON.stringify(json),
       0,
@@ -122,7 +122,7 @@ export class OsService {
     );
 
     const ordens: any = await this.getOsAtualizadas();
-    const os = await this.db.getAll("os");
+    const os = await this.db.getAll('os');
     for (const item of ordens) {
       if (this.verificarOSExiste(os, item.id)) {
         this.db.insertOs(item, item.area);
@@ -147,19 +147,19 @@ export class OsService {
   private async getOsAtualizadas() {
     let ordens: any;
     const api = await this.db.createQuery(
-      "SELECT api_franquia FROM first_entry WHERE id = 1"
+      'SELECT api_franquia FROM first_entry WHERE id = 1'
     );
 
     let url: string;
     if (this.levantamento) {
       url =
         api[0].api_franquia +
-        "levantamentoByRotaApp/" +
+        'levantamentoByRotaApp/' +
         this.infoiniciais.rota.id;
     } else {
-      url = api[0].api_franquia + "osByRotaApp/" + this.infoiniciais.rota.id;
+      url = api[0].api_franquia + 'osByRotaApp/' + this.infoiniciais.rota.id;
     }
-    console.log("API ATUALIZAR OS: " + url);
+    console.log('API ATUALIZAR OS: ' + url);
     try {
       ordens = await this.http.get(url).toPromise();
     } catch (e) {
@@ -181,14 +181,14 @@ export class OsService {
   }
 
   async updateOsEnviada(os, status) {
-    console.log("STATUS DE RETORNO WEBSERVICE" + status);
+    console.log('STATUS DE RETORNO WEBSERVICE' + status);
     console.log(status);
     return new Promise((resolve, reject) => {
-      const result = this.db.getByOs("json", os);
+      const result = this.db.getByOs('json', os);
       if (status === 2) {
-        this.db.createQuery("UPDATE os SET status = 3 WHERE id = " + os);
+        this.db.createQuery('UPDATE os SET status = 3 WHERE id = ' + os);
       } else if (status === 1) {
-        this.db.createQuery("UPDATE os SET status = 4 WHERE id = " + os);
+        this.db.createQuery('UPDATE os SET status = 4 WHERE id = ' + os);
       }
       resolve(result);
     });
@@ -197,7 +197,7 @@ export class OsService {
   async makeJsonOs(os) {
     const areas = await this.areasDbService.getAreaOsJson(os);
     const produtos = await this.produto.getProdutosByOs(os);
-    const orden = await this.db.getById("os", os);
+    const orden = await this.db.getById('os', os);
     const dispositivos = await this.db.getDispositivosOsJson(os);
     // let my = "";
     // for (const d of dispositivos) {
@@ -213,13 +213,13 @@ export class OsService {
       status: 1,
       franquia: this.infoiniciais.franquia.id_franquia,
       rota: this.infoiniciais.rota.id,
-      dataExecucao: orden[0].data + " " + orden[0].horaInicio,
+      dataExecucao: orden[0].data + ' ' + orden[0].horaInicio,
       responsavel: this.infoiniciais.responsavel.id,
       equipe: this.infoiniciais.equipe,
       horaInicio: +orden[0].horaInicio,
       horaFim: +orden[0].horaFim,
       nome: orden[0].nome,
-      rg: orden[0].rg,
+      cpf: orden[0].cpf,
       obsGeral: orden[0].obsGeral,
       obsProximo: orden[0].obsProximo,
       assinatura: orden[0].assinatura,
@@ -232,14 +232,14 @@ export class OsService {
   }
 
   async makeJsonOsNaoExec(os) {
-    const orden = await this.db.getById("os", os);
+    const orden = await this.db.getById('os', os);
     const json = orden[0];
 
     return {
       os: os,
       status: 0,
       franquia: this.infoiniciais.franquia.id_franquia,
-      dataExecucao: json.data + " " + json.horaInicio,
+      dataExecucao: json.data + ' ' + json.horaInicio,
       rota: this.infoiniciais.rota.id,
       responsavel: this.infoiniciais.responsavel.id,
       img: json.img,
@@ -254,8 +254,8 @@ export class OsService {
   async makeJsonOsLevantamento(os: any) {
     const areas = await this.areasDbService.getAreaOsJson(os);
     const produtos = await this.produto.getModulosByOs(os);
-    const orden = await this.db.getById("os", os);
-    const detalhesTecnicos = await this.db.getById("detalhe", os);
+    const orden = await this.db.getById('os', os);
+    const detalhesTecnicos = await this.db.getById('detalhe', os);
     const dispositivos = await this.db.getDispositivosLevJson(os);
 
     return {
@@ -263,13 +263,13 @@ export class OsService {
       status: 1,
       franquia: this.infoiniciais.franquia.id_franquia,
       rota: this.infoiniciais.rota.id,
-      dataExecucao: orden[0].data + " " + orden[0].horaInicio,
+      dataExecucao: orden[0].data + ' ' + orden[0].horaInicio,
       responsavel: this.infoiniciais.responsavel.id,
       equipe: this.infoiniciais.equipe,
       horaInicio: +orden[0].horaInicio,
       horaFim: +orden[0].horaFim,
       nome: orden[0].nome,
-      rg: orden[0].rg,
+      cpf: orden[0].cpf,
       obsGeral: orden[0].obsGeral,
       obsProximo: orden[0].obsProximo,
       assinatura: orden[0].assinatura,
@@ -281,14 +281,14 @@ export class OsService {
     };
   }
   async makeJsonOsLevantamentoNaoExec(os) {
-    const orden = await this.db.getById("os", os);
+    const orden = await this.db.getById('os', os);
     const json = orden[0];
 
     return {
       os: os,
       status: 0,
       franquia: this.infoiniciais.franquia.id_franquia,
-      dataExecucao: json.data + " " + json.horaInicio,
+      dataExecucao: json.data + ' ' + json.horaInicio,
       rota: this.infoiniciais.rota.id,
       responsavel: this.infoiniciais.responsavel.id,
       img: json.img,
